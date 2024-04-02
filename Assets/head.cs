@@ -4,105 +4,101 @@ using System.Collections.Generic;
 using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 using Random = UnityEngine.Random;
 
 public class head : MonoBehaviour
 {
     // Start is called before the first frame update
-    public Vector2 direction = Vector2.right; // Initial direction
-    public Vector2 nextDirection;
-    public float speed = 1.0f;
+    public float speed = 1f;
 
-    private Vector2 currentPosition;
-    private bool directionQueued = false;
+    private Vector3 currentPosition;
+    private Vector3 nextPosition;
+    public Vector3 direction = Vector3.right; // Initial direction
+    
+    public float time;
     
     [SerializeField]  GameObject food;
     [SerializeField]  GameObject body;
     [SerializeField]  Text scoreText;
+    [SerializeField]  GameObject replayButton;
+    
     public int score = 0;
-    
-    
     
     void Start()
     {
-        currentPosition = transform.position; // Assuming the snake starts at an integer position
-        nextDirection = direction;
+        currentPosition = transform.position;
+        nextPosition = currentPosition + 0.5f*direction;
+        time = 0f;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        HandleInput();
-        Move();
-    }
-
-    void HandleInput()
-    {
+        time += Time.deltaTime;
+        timeSinceStart += Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            nextDirection = Vector2.up;
-            directionQueued = true;
+            direction = Vector3.up;
         }
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            nextDirection = Vector2.down;
-            directionQueued = true;
+            direction = Vector3.down;
         }
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            nextDirection = Vector2.left;
-            directionQueued = true;
+            direction = Vector3.left;
         }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            nextDirection = Vector2.right;
-            directionQueued = true;
+            direction = Vector3.right;
         }
         
-    }
-
-    void Move()
-    {
-        currentPosition += speed * direction  * Time.deltaTime;
-        transform.position = currentPosition;
-
-        if (directionQueued && IsAtCorrectPosition(currentPosition))
+        //update currentPosition and nextPosition when pass 1s
+        if (time> 0.5f)
         {
-            direction = nextDirection;
-            directionQueued = false;
+            time -= 0.5f;
+            currentPosition = nextPosition;
+            nextPosition = currentPosition + speed*direction;
         }
+        
+        // update position
+        transform.position = Vector3.Lerp(currentPosition, nextPosition, time);
+        // debug for moving not fluent
+        // Debug.Log(timeSinceStart);
+        // Debug.Log(time);
+        // Debug.Log(transform.position);
     }
-
-    bool IsAtCorrectPosition(Vector2 position)
-    {
-        float epsilon = 0.01f; // Adjust as needed for precision
-        float modX = Mathf.Abs(position.x % 0.5f);
-        float modY = Mathf.Abs(position.y % 0.5f);
-        bool isXAligned = modX < epsilon || (0.5f - modX) < epsilon;
-        bool isYAligned = modY < epsilon || (0.5f - modY) < epsilon;
-        return isXAligned && isYAligned;
-    }
+    
 
     private void OnCollisionEnter2D(Collision2D other)
     {
         Debug.Log("hit something");
+        //debug for case when touching
         if (other.gameObject.tag == "food")
         {
             Debug.Log("eat food");
             Destroy(other.gameObject);
             GameObject newFood = Instantiate(food);
-            int x = Random.Range(0, 16);
-            int y = Random.Range(0, 16);
-            newFood.transform.position = new Vector3(0.5f * x - 4, 0.5f * y - 4, 0);
-            score += 1;
+            int x = Random.Range(0, 12);
+            int y = Random.Range(0, 12);
+            newFood.transform.position = new Vector3(0.5f * x - 3, 0.5f * y - 3, 0);
+            score += 1; 
             scoreText.text = "Score: " + score.ToString();
         }
         else if (other.gameObject.tag == "obstacle")
         {
             Debug.Log("hit obstacle");
+            Time.timeScale = 0f;
+            replayButton.SetActive(true);
         }
+    }
+
+    public void Replay()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("SampleScene");
     }
     
 }
