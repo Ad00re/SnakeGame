@@ -13,7 +13,7 @@ public class SnakeManager : MonoBehaviour
     // Start is called before the first frame update
     public float speed = 1f;
 
-    public Vector2 snakeHead;
+    
     [SerializeField] public Vector2 food;
     public List<Vector2> snake;
     
@@ -40,15 +40,13 @@ public class SnakeManager : MonoBehaviour
     void Start()
     {
         time = 0f;
-        snakeHead = new Vector2(0, 0);
+        
         food = new Vector2(2, 0);
         snake = new List<Vector2>();
-        snake.Add(snakeHead);
-        // snake.Add(new Vector2(-1, 0));
+        snake.Add(new Vector2(0, 0));
         snakeDisplay = new List<GameObject>();
         snakeDisplay.Add(head);
-        // snakeDisplay.Add(Instantiate(bodyPrefab));
-        //
+        
         foodPosition = 0.5f*new Vector3(food.x, food.y, 0);
         foodObject.transform.position = foodPosition;
     }
@@ -56,10 +54,10 @@ public class SnakeManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // for(int i = 0;i<snake.Count;i++)
-        // {
-        //     snakeDisplay[i].gameObject.transform.position = 0.5f*new Vector3(snake[i].x, snake[i].y, 0) + 0.5f*time*speed*new Vector3(direction.x, direction.y, 0);
-        // }
+        for(int i = 0;i<snake.Count;i++)
+        {
+            snakeDisplay[i].gameObject.transform.position = 0.5f * new Vector3(snake[i].x, snake[i].y, 0);
+        }
         
         time += Time.deltaTime;
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -78,23 +76,29 @@ public class SnakeManager : MonoBehaviour
         {
             tempDirection = Vector2.right;
         }
-        head.transform.position = 0.5f*new Vector3(snakeHead.x, snakeHead.y, 0) + 0.5f*time*speed*new Vector3(direction.x, direction.y, 0);
+        foodPosition = 0.5f*new Vector3(food.x, food.y, 0);
+        foodObject.transform.position = foodPosition;
         
         if (time*speed> 1)
         {
             time -= 1f/speed;
-            snakeHead += direction;
             direction = tempDirection;
+            snake.Insert(0, snake[0] + direction);
+            snake.RemoveAt(snake.Count-1);
+            
+           
+            
         }
         //check for eat food
-        if (snakeHead + direction == food)
+        if (snake[0] + direction == food)
         {
-            food = new Vector2(Random.Range(-10, 10), Random.Range(-10, 10));
-            foodPosition = 0.5f*new Vector3(food.x, food.y, 0);
-            foodObject.transform.position = foodPosition;
             // //create a new body
-            // snake.Add(snakeHead-direction);
-            // snakeDisplay.Add(Instantiate(bodyPrefab));
+            snake.Add(food);
+            snakeDisplay.Add(Instantiate(bodyPrefab));
+            
+            food = new Vector2(Random.Range(-10, 10), Random.Range(-10, 10));
+            
+            
         }
     }
     
