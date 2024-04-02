@@ -18,6 +18,7 @@ public class head : MonoBehaviour
     public Vector3 direction = Vector3.right; // Initial direction
     
     public float time;
+    public float timeSinceStart;
     
     [SerializeField]  GameObject food;
     [SerializeField]  GameObject body;
