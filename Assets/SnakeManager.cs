@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.UI;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class SnakeManager : MonoBehaviour
@@ -15,6 +12,7 @@ public class SnakeManager : MonoBehaviour
     
     public Vector2Int food;
     public List<Vector2Int> snake;
+    
     public List<Vector2Int> obstacles;
     
     
@@ -29,20 +27,29 @@ public class SnakeManager : MonoBehaviour
     public float time;
     
 
-    [SerializeField]  GameObject head;
-    [SerializeField]  GameObject foodObject;
-    [SerializeField]  GameObject bodyPrefab;
-    [SerializeField]  Text scoreText;
-    [SerializeField]  GameObject replayButton;
+    [SerializeField] private GameObject head;
+    [SerializeField] private GameObject foodObject;
+    [SerializeField] private GameObject bodyPrefab;
+    [SerializeField] private Text scoreText;
+    [SerializeField] private GameObject replayButton;
     
-    public int score = 0;
+    public int score;
     
     void Start()
     {
         time = 0f;
-        food = new Vector2Int(2, 0);
-        snake = new List<Vector2Int> { new Vector2Int(0, 0) };
-        snakeDisplay = new List<GameObject> {head};
+        score = 0;
+        food = new Vector2Int(4, 0);
+        snake = new List<Vector2Int>
+        {
+            new Vector2Int(0, 0),
+            new Vector2Int(0, 0)
+        };
+        snakeDisplay = new List<GameObject>
+        {
+            head,
+            Instantiate(bodyPrefab)
+        };
         //create obstacles
         obstacles = new List<Vector2Int>();
         int[] values = { -1, 1 };
@@ -81,13 +88,15 @@ public class SnakeManager : MonoBehaviour
             tempDirection = new Vector2Int(1, 0);
         }
         
-        if (time*speed> 1)
+        if (time*speed> 1f)
         {
             time -= 1f/speed;
-            snake.Insert(0, snake[0] + direction);
+            Vector2Int newHead = snake[0] + direction;
+            snake.RemoveAt(0);
+            snake.Insert(0, newHead);
+            snake.Insert(0, newHead);
             snake.RemoveAt(snake.Count-1);
             direction = tempDirection;
-            
         }
         //view
         foodPosition = 0.5f*new Vector3(food.x, food.y, 0);
@@ -95,12 +104,28 @@ public class SnakeManager : MonoBehaviour
         //head move depend on direction 
         Vector2 location =0.5f * Vector2.Lerp(snake[0], snake[0]+direction, time * speed);
         snakeDisplay[0].gameObject.transform.position = new Vector3(location.x, location.y, 0);
-        // body move depend on previous body
-        for(int i = 1;i<snake.Count;i++)
+        
+        if (snake.Count > 2)
         {
-            location = 0.5f * Vector2.Lerp(snake[i], snake[i - 1], time * speed);
-            snakeDisplay[i].gameObject.transform.position = new Vector3(location.x, location.y, 0);
+            // snake tail 
+            location =0.5f * Vector2.Lerp(snake[^1], snake[^2], time * speed);
+            snakeDisplay[^1].gameObject.transform.position = new Vector3(location.x, location.y, 0);
+            // body after head
+            location = 0.5f * Vector2.Lerp(snake[1], snake[0], time * speed);
+            snakeDisplay[1].gameObject.transform.position = new Vector3(location.x, location.y, 0);
+            // all other body move only at time 0
+            for(int i = 2;i<snake.Count-1;i++)
+            {
+                location = 0.5f * Vector2.Lerp(snake[i], snake[i - 1], 0);
+                snakeDisplay[i].gameObject.transform.position = new Vector3(location.x, location.y, 0);
+            }
         }
+        else
+        {
+            snakeDisplay[1].gameObject.transform.position = snakeDisplay[0].gameObject.transform.position;
+        }
+        
+        
         //check for eat food
         if (snake[0] + direction == food)
         {

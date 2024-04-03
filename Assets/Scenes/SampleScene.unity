@@ -1648,7 +1648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4313beb151654a35a2de8f65a952ad5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 4.25
   food: {x: 0, y: 0}
   snake: []
   obstacles: []
