@@ -81,9 +81,10 @@ public class SnakeManager : MonoBehaviour
         if (time*speed> 1)
         {
             time -= 1f/speed;
-            direction = tempDirection;
             snake.Insert(0, snake[0] + direction);
             snake.RemoveAt(snake.Count-1);
+            direction = tempDirection;
+            
         }
         //view
         foodPosition = 0.5f*new Vector3(food.x, food.y, 0);
@@ -100,7 +101,7 @@ public class SnakeManager : MonoBehaviour
         //check for eat food
         if (snake[0] + direction == food)
         {
-            // //create a new body
+            //create a new body
             snake.Insert(0,food);
             snakeDisplay.Add(Instantiate(bodyPrefab));
             score += 1; 
