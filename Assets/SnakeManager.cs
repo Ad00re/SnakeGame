@@ -9,6 +9,7 @@ public class SnakeManager : MonoBehaviour
     public float speed = 1f;
     
     public Vector2Int food;
+    public Vector2Int head;
     public List<Vector2Int> snake;
     
     public List<Vector2Int> obstacles;
@@ -21,7 +22,7 @@ public class SnakeManager : MonoBehaviour
     
     public float time;
 
-    [SerializeField] public GameObject head;
+    [SerializeField] public GameObject headObject;
     [SerializeField] public GameObject foodObject;
     [SerializeField] public GameObject bodyPrefab;
     [SerializeField] public Text scoreText;
@@ -34,14 +35,13 @@ public class SnakeManager : MonoBehaviour
         time = 0f;
         score = 0;
         food = new Vector2Int(4, 0);
+        head = new Vector2Int(0, 0);
         snake = new List<Vector2Int>
         {
-            new Vector2Int(0, 0),
-            new Vector2Int(0, 0)
+            head
         };
         snakeDisplay = new List<GameObject>
         {
-            head,
             Instantiate(bodyPrefab)
         };
         //create obstacles
@@ -85,10 +85,8 @@ public class SnakeManager : MonoBehaviour
         if (time*speed> 1f)
         {
             time -= 1f/speed;
-            Vector2Int newHead = snake[0] + direction;
-            snake.RemoveAt(0);
-            snake.Insert(0, newHead);
-            snake.Insert(0, newHead);
+            head = snake[0] + direction;
+            snake.Insert(0, head);
             snake.RemoveAt(snake.Count-1);
             direction = tempDirection;
         }
@@ -96,26 +94,23 @@ public class SnakeManager : MonoBehaviour
         foodPosition = 0.5f*new Vector3(food.x, food.y, 0);
         foodObject.transform.position = foodPosition;
         //head move depend on direction 
-        Vector2 location =0.5f * Vector2.Lerp(snake[0], snake[0]+direction, time * speed);
-        snakeDisplay[0].gameObject.transform.position = new Vector3(location.x, location.y, 0);
+        Vector2 location =0.5f * Vector2.Lerp(head, head+direction, time * speed);
+        headObject.gameObject.transform.position = new Vector3(location.x, location.y, 0);
         
-        if (snake.Count > 2)
+        if (snake.Count > 1)
         {
-            // snake tail 
+            // snake tail move
             location =0.5f * Vector2.Lerp(snake[^1], snake[^2], time * speed);
             snakeDisplay[^1].gameObject.transform.position = new Vector3(location.x, location.y, 0);
-            // body after head
-            location = 0.5f * Vector2.Lerp(snake[1], snake[0], time * speed);
-            snakeDisplay[1].gameObject.transform.position = new Vector3(location.x, location.y, 0);
-            // all other body move only at time 0
-            for(int i = 2;i<snake.Count-1;i++)
+            // all other body move only when snake value change
+            for(int i = 0;i<snake.Count-1;i++)
             {
                 snakeDisplay[i].gameObject.transform.position = new Vector3(0.5f * snake[i].x, 0.5f * snake[i].y, 0);
             }
         }
         else
         {
-            snakeDisplay[1].gameObject.transform.position = snakeDisplay[0].gameObject.transform.position;
+            snakeDisplay[0].gameObject.transform.position = headObject.gameObject.transform.position;
         }
         
         
