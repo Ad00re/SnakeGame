@@ -4,10 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-
 public class SnakeManager : MonoBehaviour
 {
-    // Start is called before the first frame update
     public float speed = 1f;
     
     public Vector2Int food;
@@ -15,23 +13,19 @@ public class SnakeManager : MonoBehaviour
     
     public List<Vector2Int> obstacles;
     
-    
     public Vector3 foodPosition;
     public List<GameObject> snakeDisplay;
 
     public Vector2Int direction = new Vector2Int(1, 0);
     public Vector2Int tempDirection = new Vector2Int(1,0);
     
-    
-    
     public float time;
-    
 
-    [SerializeField] private GameObject head;
-    [SerializeField] private GameObject foodObject;
-    [SerializeField] private GameObject bodyPrefab;
-    [SerializeField] private Text scoreText;
-    [SerializeField] private GameObject replayButton;
+    [SerializeField] public GameObject head;
+    [SerializeField] public GameObject foodObject;
+    [SerializeField] public GameObject bodyPrefab;
+    [SerializeField] public Text scoreText;
+    [SerializeField] public GameObject replayButton;
     
     public int score;
     
@@ -116,8 +110,7 @@ public class SnakeManager : MonoBehaviour
             // all other body move only at time 0
             for(int i = 2;i<snake.Count-1;i++)
             {
-                location = 0.5f * Vector2.Lerp(snake[i], snake[i - 1], 0);
-                snakeDisplay[i].gameObject.transform.position = new Vector3(location.x, location.y, 0);
+                snakeDisplay[i].gameObject.transform.position = new Vector3(0.5f * snake[i].x, 0.5f * snake[i].y, 0);
             }
         }
         else
@@ -147,12 +140,14 @@ public class SnakeManager : MonoBehaviour
             if (snake[0] + direction == obstacle)
             {
                 Die();
+                return;
             }
         }
         // check for collide to wall
         if (Math.Abs((snake[0] + direction).x)==9 || Math.Abs((snake[0] + direction).y)==9)
         {
             Die();
+            return;
         }
         // check for collide to it self
         for(int i = 1;i<snake.Count;i++)
@@ -160,6 +155,7 @@ public class SnakeManager : MonoBehaviour
             if (snake[0] + direction == snake[i])
             {
                 Die();
+                return;
             }
         }
     }
