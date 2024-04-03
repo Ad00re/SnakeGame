@@ -27,6 +27,7 @@ public class SnakeManager : MonoBehaviour
     
     
     public float time;
+    
 
     [SerializeField]  GameObject head;
     [SerializeField]  GameObject foodObject;
@@ -54,7 +55,9 @@ public class SnakeManager : MonoBehaviour
                 obstacles.Add(new Vector2Int(6 * i, 7 * j));
             }
         }
+
         
+
     }
 
     // Update is called once per frame
@@ -102,7 +105,7 @@ public class SnakeManager : MonoBehaviour
         if (snake[0] + direction == food)
         {
             //create a new body
-            snake.Insert(0,food);
+            snake.Insert(0,snake[0]);
             snakeDisplay.Add(Instantiate(bodyPrefab));
             score += 1; 
             scoreText.text = "Score: " + score;
