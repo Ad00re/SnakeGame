@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 22018409927269837}
   - component: {fileID: 1604758107145296945}
   - component: {fileID: 1090004644109027566}
-  - component: {fileID: 9032420774671789090}
   m_Layer: 0
   m_Name: head
   m_TagString: Untagged
@@ -159,24 +158,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &9032420774671789090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5360162201799804795}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4313beb151654a35a2de8f65a952ad5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 1
-  direction: {x: 1, y: 0, z: 0}
-  time: 0
-  timeSinceStart: 0
-  food: {fileID: 8751568096755258730, guid: 8d1e7530cd444463e9329824b80a6a51, type: 3}
-  body: {fileID: 4316638288702595028, guid: f6c8389f69da740b784673d07db14327, type: 3}
-  scoreText: {fileID: 0}
-  replayButton: {fileID: 0}
-  score: 0
